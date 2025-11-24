@@ -14,6 +14,9 @@ import java.util.List;
 @Service
 public class BookingService {
 
+    private static final String STATUS_CONFIRMED = "CONFIRMED";
+    private static final String STATUS_CANCELLED = "CANCELLED";
+
     @Autowired
     private BookingRepository bookingRepository;
 
@@ -38,6 +41,19 @@ public class BookingService {
     }
 
     public Booking createBooking(Booking booking) {
+        if (booking.getUserId() == null) {
+            throw new BookingException("User ID cannot be null");
+        }
+        if (booking.getShowtimeId() == null) {
+            throw new BookingException("Showtime ID cannot be null");
+        }
+        if (booking.getNumberOfSeats() == null || booking.getNumberOfSeats() <= 0) {
+            throw new BookingException("Number of seats must be greater than 0");
+        }
+        if (booking.getTotalPrice() == null || booking.getTotalPrice() <= 0) {
+            throw new BookingException("Total price must be greater than 0");
+        }
+        
         try {
             Boolean reserved = showtimeClient.reserveSeats(booking.getShowtimeId(), booking.getNumberOfSeats());
             
@@ -46,7 +62,7 @@ public class BookingService {
             }
             
             booking.setBookingTime(LocalDateTime.now());
-            booking.setStatus("CONFIRMED");
+            booking.setStatus(STATUS_CONFIRMED);
             return bookingRepository.save(booking);
             
         } catch (Exception e) {
@@ -57,13 +73,13 @@ public class BookingService {
     public void cancelBooking(Long id) {
         Booking booking = getBookingById(id);
         
-        if (!"CONFIRMED".equals(booking.getStatus())) {
+        if (!STATUS_CONFIRMED.equals(booking.getStatus())) {
             throw new BookingException("Cannot cancel booking with status: " + booking.getStatus());
         }
         
         try {
             showtimeClient.releaseSeats(booking.getShowtimeId(), booking.getNumberOfSeats());
-            booking.setStatus("CANCELLED");
+            booking.setStatus(STATUS_CANCELLED);
             bookingRepository.save(booking);
         } catch (Exception e) {
             throw new BookingException("Failed to cancel booking: " + e.getMessage());

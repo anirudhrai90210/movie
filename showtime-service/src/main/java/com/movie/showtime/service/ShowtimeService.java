@@ -35,6 +35,14 @@ public class ShowtimeService {
 
     public Showtime updateShowtime(Long id, Showtime showtimeDetails) {
         Showtime showtime = getShowtimeById(id);
+        
+        Integer reservedSeats = showtime.getTotalSeats() - showtime.getAvailableSeats();
+        if (showtimeDetails.getTotalSeats() < reservedSeats) {
+            throw new InvalidOperationException(
+                "Cannot reduce total seats below reserved seats. Reserved: " + reservedSeats + 
+                ", Requested total: " + showtimeDetails.getTotalSeats());
+        }
+        
         showtime.setMovieId(showtimeDetails.getMovieId());
         showtime.setShowDateTime(showtimeDetails.getShowDateTime());
         showtime.setTheater(showtimeDetails.getTheater());
@@ -63,6 +71,14 @@ public class ShowtimeService {
 
     public synchronized void releaseSeats(Long showtimeId, Integer numberOfSeats) {
         Showtime showtime = getShowtimeById(showtimeId);
+        
+        if (showtime.getAvailableSeats() + numberOfSeats > showtime.getTotalSeats()) {
+            throw new InvalidOperationException(
+                "Cannot release more seats than total. Total: " + showtime.getTotalSeats() + 
+                ", Currently available: " + showtime.getAvailableSeats() + 
+                ", Attempting to release: " + numberOfSeats);
+        }
+        
         showtime.setAvailableSeats(showtime.getAvailableSeats() + numberOfSeats);
         showtimeRepository.save(showtime);
     }
