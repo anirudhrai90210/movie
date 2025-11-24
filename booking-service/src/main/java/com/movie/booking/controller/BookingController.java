@@ -30,6 +30,8 @@ public class BookingController {
         try {
             Booking created = bookingService.createBooking(booking);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } catch (feign.FeignException.NotFound e) {
+            return ResponseEntity.notFound().build();
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }

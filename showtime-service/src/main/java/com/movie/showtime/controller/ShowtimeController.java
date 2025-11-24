@@ -55,6 +55,9 @@ public class ShowtimeController {
             Showtime updated = showtimeService.reduceSeats(id, count);
             return ResponseEntity.ok(updated);
         } catch (RuntimeException e) {
+            if (e.getMessage().contains("not found")) {
+                return ResponseEntity.notFound().build();
+            }
             return ResponseEntity.badRequest().build();
         }
     }
