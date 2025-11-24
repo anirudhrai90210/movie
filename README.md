@@ -2,6 +2,12 @@
 
 A beginner-friendly Spring Boot microservices application for a simple Movie Ticket Booking System.
 
+## 📚 Documentation
+
+- **[Quick Start Guide](QUICKSTART.md)** - Get up and running in minutes
+- **[Architecture Overview](ARCHITECTURE.md)** - Detailed system architecture and design patterns
+- **[API Documentation](#api-endpoints)** - Complete API reference (below)
+
 ## Architecture Overview
 
 This system uses a microservices architecture with the following components:
@@ -42,6 +48,30 @@ This system uses a microservices architecture with the following components:
 - Maven 3.6 or higher
 
 ## Getting Started
+
+### Quick Start (Recommended)
+
+Use the provided scripts to start all services automatically:
+
+```bash
+# Build the project
+mvn clean install
+
+# Start all services
+./start-all.sh
+
+# Run tests
+./test-suite.sh
+
+# Stop all services
+./stop-all.sh
+```
+
+For detailed manual setup instructions, see the [Quick Start Guide](QUICKSTART.md).
+
+### Manual Start
+
+If you prefer to start services manually:
 
 ### 1. Build the Project
 
